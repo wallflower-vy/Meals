@@ -1,32 +1,55 @@
 <template>
-  <router-link :to="{name: 'byIngredient', params:{ingredient: ingredient.strIngredient}}" class=" block p-8 pb-0" v-for="ingredient in ingredients" :key="ingredient.idIngredient">
-    <h1 class="text-4xl font-bold mb-4 text-orange-500">Meals for {{ ingredient.strIngredient }}</h1>
-    <pre>{{ ingredient.strDescription}}</pre>
-  </router-link>
-  
-
- 
-  <!-- <MealItem :meals="meals" /> -->
+  <div class="p-8 pb-0">
+    <h1 class="text-4xl font-bold mb-4 text-orange-500">Ingredients</h1>
+  </div>
+  <div class="px-8">
+    <input
+      type="text"
+      v-model="keyword"
+      class="rounded border-2 bg-white border-gray-200 focus:ring-orange-500 focus:border-orange-500 mb-3 w-full"
+      placeholder="Search for Ingredients"
+    />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <a href="#"
+        @click.prevent="openIngredient(ingredient)"
+        v-for="ingredient of computedIngredients"
+        :key="ingredient.idIngredient"
+        class="block bg-white rounded p-3 mb-3 shadow"
+      >
+        <h3 class="text-2xl font-bold mb-2">{{ ingredient.strIngredient }}</h3>
+      </a>
+    </div>
+  </div>
 </template>
 
 <script setup>
-// import { computed } from "@vue/reactivity";
+import { computed } from "@vue/reactivity";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import axiosClient from "../axiosClient";
 import store from "../store";
-// import MealItem from '../components/MealItem.vue'
 
-const route = useRoute();
-// const ingredient = computed(() => store.state.ingredient)
-// const meals = computed(() => store.state.mealsByIngredient)
-const ingredients =ref([])
+const router = useRouter();
+const keyword = ref("");
+const ingredients = ref([]);
+const computedIngredients = computed(() => {
+  if (!computedIngredients) return ingredients;
+  return ingredients.value.filter((i) =>
+    i.strIngredient.toLowerCase().includes(keyword.value.toLowerCase())
+  );
+});
+
+function openIngredient(ingredient) {
+  store.commit('setIngredient', ingredient)
+  router.push({
+    name: "byIngredient",
+    params: { ingredient: ingredient.strIngredient },
+  });
+}
+
 onMounted(() => {
-  axiosClient.get("list.php?i=list ")
-  .then(({data})=>{
-    // debugger;
-    ingredients.value=data.meals
-  })
-  // store.dispatch('searchMealsByIngredient', route.params.ingredient)
-})
+  axiosClient.get("list.php?i=list").then(({ data }) => {
+    ingredients.value = data.meals;
+  });
+});
 </script>

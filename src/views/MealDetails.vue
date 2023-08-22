@@ -14,8 +14,9 @@
     <div class="my-3">
       {{ meal.strInstructions }}
     </div>
+   <div class="md:flex md:justify-between flex-row ">
     <div class="grid grid-cols-1 sm:grid-cols-2">
-      <div>
+      <div class="">
         <h2 class="text-2xl font-semibold mb-2">Ingredients</h2>
         <ul>
           <template v-for="(el, ind) of new Array(20)">
@@ -38,6 +39,8 @@
           </template>
         </ul>
       </div>
+
+   </div>
       <div class="mt-4">
         <YouTubeButton :href="meal.strYoutube" />
         <a
